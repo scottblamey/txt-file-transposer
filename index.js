@@ -16,8 +16,8 @@ async function read(path) {
 }
 
 //HTML parser
-async function htmlParser(data) {
-    const newData = await data;
+function htmlParser(data) {
+    const newData = data;
     return newData;
 }
 
@@ -28,13 +28,9 @@ async function execute(newName, newPath, newData) {
     } catch (error) {
         console.log({ error });
     }
-    console.log(highVis(`newData: ${newData}`));
 }
 
 const x = read("Sum Forty Tales from the Afterlives.html");
+const y = await htmlParser(x);
 
-const y = htmlParser(x);
-
-execute("outputData.md", newData);
-
-/* read function succesfully reads file and saves it to the data variable. however the html parser is returning undefined. i think this means the parser needs to wait for read function's promise to be forfilled before assigning the 'data' var to 'newData' - unsure how to do this... */
+await execute("outputData.md", y);
