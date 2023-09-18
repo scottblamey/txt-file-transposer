@@ -12,44 +12,36 @@ async function read(path) {
         console.log(errVis("'Read' Function Error") + { error });
     }
 }
+const parsedData = [];
 
 function htmlParser(data) {
     const $ = cheerio.load(data);
 
-    function objConstructor(page, quote, comment) {
-        //constructor f
+    function objConstruct(page, quote, comment) {
         this.page = page;
         this.quote = quote;
         this.comment = comment;
     }
 
-    const parsedData = [];
+    for (let i = 0; i < 10; i++) {
+        let obj = {};
+        let $page = "div.bookmark:eq(" + i + ") > .bm-page";
+        let $quote = "div.bookmark:eq(" + i + ") > .bm-text > p";
+        let $comment = "div.bookmark:eq(" + i + ") > .bm-note > p";
 
-    for (let i = 0; $("div:has(p):eq(" + i + ")").length > 0; i++) {
-        let testObj = {};
-        let page = "div:has(p):eq(" + i + ") > p:first";
-        let quote = "div:has(p):eq(" + i + ")";
-        let comment = "div:has(p):eq(" + i + ")";
-
-        testObj = new objConstructor(
-            $(page).text(),
-            $(quote).children().eq(2).text(),
-            $(comment).children().eq(3).text()
+        obj = new objConstruct(
+            $($page).text(),
+            $($quote).text(),
+            $($comment).text()
         );
-        parsedData.push(testObj);
-
-        // console.log(
-        //     highVis.bold(`parsedData.page >     ${i}:`) +
-        //         `${parsedData[i].page}`
-        // );
-        // console.log(
-        //     highVis(`parsedData.quote >    ${i}:`) + `${parsedData[i].quote}`
-        // );
-        // console.log(
-        //     highVis(`parsedData.comment >  ${i}:`) + `${parsedData[i].comment}`
-        // );
+        parsedData.push(obj);
     }
-    return parsedData;
+}
+
+function strConstruct(data) {
+    let str = `###Book 1 /n Page: ${parsedData[9].page} /n Quote: ${parsedData[9].quote} /n Comment: ${parsedData[9].comment}`;
+
+    return str;
 }
 
 async function execute(newName, newPath, newData) {
@@ -63,7 +55,7 @@ async function execute(newName, newPath, newData) {
 async function main(inputPath, outputFileName) {
     const outputData = htmlParser(await read(inputPath));
 
-    await execute(outputFileName, outputData);
+    await execute(outputFileName, ".\\", strConstruct(parsedData));
 }
 
 main("Sum Forty Tales from the Afterlives.html", "outputData.md");
